@@ -1,5 +1,3 @@
-const { notStrictEqual } = require("assert")
-
 const fs = require("fs")
 const express = require("express")
 const path = require("path")
@@ -30,12 +28,13 @@ app.get("/notes", (req, res) => {
 
 
 // Use express and fs to read the JSON file and return notes
-app.get("/api/notes", (req, res) => {
+app.get("/api/notes", function (req, res) {
     let notesArr = []
 
     // "get" the info from the notes db and parse them into a JSON object
-    fs.readFile(__dirname + "/db/db.json", "utf8", (err, data) => {
+    fs.readFile(__dirname + "/db/db.json", "utf8", function (err, data) {
         if (err) {
+            console.log("Could not parse @ line 39")
             throw err
         } else {
             notesArr = JSON.parse(data)
@@ -46,24 +45,36 @@ app.get("/api/notes", (req, res) => {
 });
 
 // Use express and fs to receive new note, set a unique identifier, and save
-app.post("/api/notes", (req, res) => {
+app.post("/api/notes", function (req, res) {
     let notesArr = [];
 
-    fs.readFile(__dirname + "/db/db.json", "utf8", (err, data) => {
+    fs.readFile(__dirname + "/db/db.json", "utf8", function (err, data) {
         if (err) {
+            console.log("Could not read database @ 55")
             throw err
         } else {
             notesArr = JSON.parse(data)
         }
         // return a JSON object of the notes element
         res.json(notesArr)
+
+        // generate unique id for each note using a conditional
+        let noteID = notesArr.length > 0 ? notesArr[notesArr.length - 1].id + 1: 0;
+        // append the unique ID
+        notesArr.push({ id: noteID, title: req.body.title, text: req.body.text });
+
+        fs.writeFile(__dirname + "/db/db.json", JSON.stringify(notesArr), function (err, data) {
+            if (err) {
+                console.log(err);
+
+            } else {
+                res.json(data);
+            }
+
+        })
+
     });
 
-    // generate unique id for each note using a conditional
-    let noteID = notesArr.length > 0 ? notesArr[notesArr.length - 1].id + 1 : 0;
-    // append the unique ID
-    notesArr.push({ id: noteID, title: req.body.title, text: req.body.text });
-    console.log(notesArr)
 });
 
 // Use express and fs to locate and DELETE notes in db.json
