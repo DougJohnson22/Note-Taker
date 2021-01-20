@@ -59,7 +59,7 @@ app.post("/api/notes", function (req, res) {
         res.json(notesArr)
 
         // generate unique id for each note using a conditional
-        let noteID = notesArr.length > 0 ? notesArr[notesArr.length - 1].id + 1: 0;
+        let noteID = notesArr.length > 0 ? notesArr[notesArr.length - 1].id + 1 : 0;
         // append the unique ID
         notesArr.push({ id: noteID, title: req.body.title, text: req.body.text });
 
@@ -78,7 +78,31 @@ app.post("/api/notes", function (req, res) {
 });
 
 // Use express and fs to locate and DELETE notes in db.json
+app.delete("/api/notes/:id", function (req, res) {
+    let notesArr = [];
 
+    fs.readFile(__dirname + "/db/db.json", "utf8", function (err, data) {
+        if (err) {
+            throw err
+        } else {
+            notesArr = JSON.parse(data);
+
+            for (var i in notesArr) {
+                if (notesArr[i].id === parseInt(req.params.id)) {
+                    notesArr.splice(i, 1);
+                }
+            }
+
+            fs.writeFile(__dirname + "/db/db.json", JSON.stringify(notesArr), function (err, data) {
+                if (err) {
+                    throw err
+                } else {
+                    res.send(data)
+                }
+            })
+        }
+    });
+});
 
 
 
