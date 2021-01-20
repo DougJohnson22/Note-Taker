@@ -5,7 +5,7 @@ const path = require("path")
 const app = express()
 
 // Set up the port
-PORT = 8080
+PORT = process.env.PORT || 8080;
 
 
 // Allow express to access the public folder
