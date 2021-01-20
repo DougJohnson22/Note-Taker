@@ -31,22 +31,40 @@ app.get("/notes", (req, res) => {
 
 // Use express and fs to read the JSON file and return notes
 app.get("/api/notes", (req, res) => {
-    let notesEL = []
+    let notesArr = []
 
     // "get" the info from the notes db and parse them into a JSON object
     fs.readFile(__dirname + "/db/db.json", "utf8", (err, data) => {
         if (err) {
             throw err
         } else {
-            notesEL = JSON.parse(data)
+            notesArr = JSON.parse(data)
         }
         // return a JSON object of the notes element
-        res.json(notesEL)
+        res.json(notesArr)
     });
 });
 
 // Use express and fs to receive new note, set a unique identifier, and save
+app.post("/api/notes", (req, res) => {
+    let notesArr = [];
 
+    fs.readFile(__dirname + "/db/db.json", "utf8", (err, data) => {
+        if (err) {
+            throw err
+        } else {
+            notesArr = JSON.parse(data)
+        }
+        // return a JSON object of the notes element
+        res.json(notesArr)
+    });
+
+    // generate unique id for each note using a conditional
+    let noteID = notesArr.length > 0 ? notesArr[notesArr.length - 1].id + 1 : 0;
+    // append the unique ID
+    notesArr.push({ id: noteID, title: req.body.title, text: req.body.text });
+    console.log(notesArr)
+});
 
 // Use express and fs to locate and DELETE notes in db.json
 
