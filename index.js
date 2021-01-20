@@ -21,16 +21,32 @@ app.use(express.json());
 // Use express to "get" the index.html file
 app.get("/", (req, res) => {
     res.sendFile(__dirname, "index.html")
-})
+});
 
 // Use express to "get" the notes.html file
 app.get("/notes", (req, res) => {
     res.sendFile(__dirname + "/public/notes.html")
-})
+});
+
 
 // Use express and fs to read the JSON file and return notes
+app.get("/api/notes", (req, res) => {
+    let notesEL = []
 
-// Use express and fs to receive new note and save
+    // "get" the info from the notes db and parse them into a JSON object
+    fs.readFile(__dirname + "/db/db.json", "utf8", (err, data) => {
+        if (err) {
+            throw err
+        } else {
+            notesEL = JSON.parse(data)
+        }
+        // return a JSON object of the notes element
+        res.json(notesEL)
+    });
+});
+
+// Use express and fs to receive new note, set a unique identifier, and save
+
 
 // Use express and fs to locate and DELETE notes in db.json
 
